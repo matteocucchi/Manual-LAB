@@ -1,59 +1,37 @@
-# -*- mode: ruby -*-
 
+# -*- mode: ruby -*-
 # vi: set ft=ruby :
 
- 
+ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 
-hosts = [
+Vagrant.configure(2) do |config|
 
-  { :hostname => "n1-master",  :ip => "192.168.15.10", :cpu => "2", :ram => "4096" },
-
-  { :hostname => "n2-worker1",  :ip => "192.168.15.11", :cpu => "2", :ram => "2048" },
-
-  { :hostname => "n3-worker2",  :ip => "192.168.15.12", :cpu => "2", :ram => "2048" },
-
-  { :hostname => "n4-bastion",  :ip => "192.168.15.13", :cpu => "2", :ram => "2048" },
-
-]
-
- 
-
-Vagrant.configure("2") do |config|
-
-  # always use Vagrants insecure key
-
-  config.ssh.insert_key = false
-
-  # forward ssh agent to easily ssh into the different machines
-
-  config.ssh.forward_agent = true
-
-  check_guest_additions = true
-
-  functional_vboxsf = false
-
-  config.vm.box = "bento/centos-7.9"
-
-  hosts.each do |host|
-
-    config.vm.hostname = host[:hostname]
-
-    config.vm.define host[:hostname] do |machine|
-
-      machine.vm.network "private_network", ip: host[:ip]
-
-      machine.vm.provider "virtualbox" do |v|
-
-        v.name = host[:hostname]
-
-        v.cpus = host[:cpu]
-
-        v.memory = host[:ram]
-
-      end
-
+  # Kubernetes Master Server
+  config.vm.define "kmaster" do |kmaster|
+    kmaster.vm.box = "centos/7"
+    kmaster.vm.hostname = "kmaster.example.com"
+    kmaster.vm.network "private_network", ip: "172.16.16.100"
+    kmaster.vm.provider "virtualbox" do |v|
+      v.name = "kmaster"
+      v.memory = 2048
+      v.cpus = 2
     end
+  end
 
+  NodeCount = 1
+
+  # Kubernetes Worker Nodes
+  (1..NodeCount).each do |i|
+    config.vm.define "kworker#{i}" do |workernode|
+      workernode.vm.box = "centos/7"
+      workernode.vm.hostname = "kworker#{i}.example.com"
+      workernode.vm.network "private_network", ip: "172.16.16.10#{i}"
+      workernode.vm.provider "virtualbox" do |v|
+        v.name = "kworker#{i}"
+        v.memory = 1024
+        v.cpus = 1
+      end
+    end
   end
 
 end
