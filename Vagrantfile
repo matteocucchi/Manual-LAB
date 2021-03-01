@@ -6,15 +6,31 @@ ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 
 Vagrant.configure(2) do |config|
 
-  # Kubernetes Master Server
-  config.vm.define "kmaster" do |kmaster|
+  # Load Balancer Node
+  config.vm.define "loadbalancer" do |kmaster|
     kmaster.vm.box = "centos/7"
-    kmaster.vm.hostname = "kmaster.example.com"
+    kmaster.vm.hostname = "loadbalancer.example.com"
     kmaster.vm.network "private_network", ip: "172.16.16.100"
     kmaster.vm.provider "virtualbox" do |v|
-      v.name = "kmaster"
-      v.memory = 2048
-      v.cpus = 2
+      v.name = "loadbalancer"
+      v.memory = 1024
+      v.cpus = 1
+    end
+  end
+
+  MasterCount = 2
+
+  # Kubernetes Master Nodes
+  (1..MasterCount).each do |i|
+    config.vm.define "kmaster#{i}" do |kmaster|
+      kmaster.vm.box = "centos/7"
+      kmaster.vm.hostname = "kmaster#{i}.example.com"
+      kmaster.vm.network "private_network", ip: "172.16.16.10#{i}"
+      kmaster.vm.provider "virtualbox" do |v|
+        v.name = "kmaster#{i}"
+        v.memory = 2048
+        v.cpus = 2
+      end
     end
   end
 
@@ -25,7 +41,7 @@ Vagrant.configure(2) do |config|
     config.vm.define "kworker#{i}" do |workernode|
       workernode.vm.box = "centos/7"
       workernode.vm.hostname = "kworker#{i}.example.com"
-      workernode.vm.network "private_network", ip: "172.16.16.10#{i}"
+      workernode.vm.network "private_network", ip: "172.16.16.20#{i}"
       workernode.vm.provider "virtualbox" do |v|
         v.name = "kworker#{i}"
         v.memory = 1024
