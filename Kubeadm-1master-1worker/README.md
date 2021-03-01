@@ -1,4 +1,4 @@
-# Manual-LAB
+# Creazione di un cluster Kubernetes con 1 master e 1 worker tramite kubeadm
 Creazione di un Cluster con Kubernetes.
 
 1)Creare un Vagrantfile che avvii le seguenti macchine:
