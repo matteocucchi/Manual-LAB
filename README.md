@@ -1,10 +1,11 @@
 # Set up di un cluster Kubernetes con HA usando kubeadm
 ## Vagrant Environment
-1)Creare un Vagrantfile che avvii le seguenti macchine:
-    -Load Balancer: 1CPU, 1GB RAM, 172.16.16.100 
-    -Master: 2CPU, 2GB RAM, IP 172.16.16.101
-    -Master: 2CPU, 2GB RAM, IP 172.16.16.102
-    -Worker: 1CPU, 1GB RAM, IP 172.16.16.201
+|Role|FQDN|OS|CPU|RAM|IP|
+|----|----|----|----|----|----|
+|Load Balancer|loadbalancer.example.com|CentOS 7|1CPU|1GB RAM|172.16.16.100| 
+|Master|kmaster1.example.com|CentOS 7|2CPU|2GB RAM|172.16.16.101|
+|Master|kmaster2.example.com|CentOS 7|2CPU|2GB RAM|172.16.16.102|
+|Worker|kworker1.example.com|CentOS 7|1CPU|1GB RAM|172.16.16.201|
 
 ## Set up del load balancer
 1)Scaricare haproxy
