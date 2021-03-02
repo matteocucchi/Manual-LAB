@@ -119,6 +119,6 @@ eseguire tutti i comandi come root!!
 ## SUGLI ALTRI NODI:
 1)Aggiungere un nodo:
 
-    eseguire il comando restituito come output nel passaggio 14 come root.
+    eseguire il comando restituito come output nel passaggio 4 come root.
 >ATTENZIONE: distinguere il tipo di nodo da aggiungere per utilizzare la join corretta.
 
