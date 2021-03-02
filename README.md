@@ -38,7 +38,7 @@
 
 ## Set up cluster (tutti i nodi)
 eseguire tutti i comandi come root!!
--------------------------------------
+
 1)Modificare i file /etc/hosts in modo che si vedano le macchine.
 
 2)Disabilitare SELinux:
@@ -88,8 +88,7 @@ eseguire tutti i comandi come root!!
 
     sudo systemctl enable --now kubelet
 
->ATTENZIONE: il servizio potrebbe dare un errore finchè non si effettua la kubeadm init
-
+>ATTENZIONE: il servizio potrebbe dare un errore finchè non si effettua la kubeadm init.
 
 ## OPERAZIONI DA ESEGUIRE SOLO SU UNO DEI MASTER (es: kmaster1) 
 
@@ -108,7 +107,7 @@ eseguire tutti i comandi come root!!
 
     wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
->    ATTENZIONE: se si utilizza vagrant modifacer il file come segue
+>    ATTENZIONE: se si utilizza vagrant modifacer il file come segue.
         - cercare /flannld
         - sotto "args:" aggiungere indentato correttamente "- --iface=eth1"
     questo si fa perchè vagrant utilizza la iface eth0 per il collegamento ssh con le macchine.
