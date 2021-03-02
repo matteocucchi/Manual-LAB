@@ -12,6 +12,7 @@
     sudo yum install -y haproxy
 
 2)Modificare il file /etc/haproxy/haproxy.cfg:
+
     frontend kubernetes-frontend
         bind 172.16.16.100:6443
         mode tcp
@@ -26,7 +27,12 @@
         server kmaster2 172.16.16.102:6443 check fall 3 rise 2
 
 3)Disabilitare il controllo di SELinux:
-    -sudo setsebool -P haproxy_connect_any=1
+    
+    sudo setsebool -P haproxy_connect_any=1
+
+4)Disabilitari firewalld:
+
+    sudo systemctl disable --now firewalld
 
 
 ## Set up cluster (tutti i nodi)
