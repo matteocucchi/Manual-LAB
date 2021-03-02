@@ -106,10 +106,7 @@ eseguire tutti i comandi come root!!
 
     wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
->    ATTENZIONE: se si utilizza vagrant modifacer il file come segue.
-        - cercare /flannld
-        - sotto "args:" aggiungere indentato correttamente "- --iface=eth1"
-    questo si fa perchè vagrant utilizza la iface eth0 per il collegamento ssh con le macchine.
+>    ATTENZIONE: se si utilizza vagrant modificare il file kube-flannel.yml, cercare con vim /flanneld, sotto "args:" aggiungere indentato correttamente "- --iface=eth1". Questo si fa perchè vagrant utilizza la iface eth0 per il collegamento ssh con le macchine che di default viene utilizata da flanneld.
 
 4)se si è dimenticato il token per l'aggiunta di nuovi nodi al cluster:
 
