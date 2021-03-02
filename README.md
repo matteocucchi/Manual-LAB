@@ -92,6 +92,7 @@ eseguire tutti i comandi come root!!
 
 
 ## OPERAZIONI DA ESEGUIRE SOLO SU UNO DEI MASTER (es: kmaster1) 
+
 1)Inizializzare il cluster:
 
     sudo kubeadm init --control-plane-endpoint="172.16.16.100:6443" --upload-certs --apiserver-advertise-address=172.16.16.101 --pod-network-cidr=10.244.0.0/16
