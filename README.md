@@ -2,13 +2,14 @@
 ## Vagrant Environment
 1)Creare un Vagrantfile che avvii le seguenti macchine:
     -Load Balancer: 1CPU, 1GB RAM, 172.16.16.100 
-    -Master: 1CPU, 2GB RAM, IP 172.16.16.101
-    -Master: 1CPU, 2GB RAM, IP 172.16.16.102
+    -Master: 2CPU, 2GB RAM, IP 172.16.16.101
+    -Master: 2CPU, 2GB RAM, IP 172.16.16.102
     -Worker: 1CPU, 1GB RAM, IP 172.16.16.201
 
 ## Set up del load balancer
 1)Scaricare haproxy
-    -sudo yum install -y haproxy
+    
+    sudo yum install -y haproxy
 
 2)Modificare il file /etc/haproxy/haproxy.cfg:
     frontend kubernetes-frontend
