@@ -2,10 +2,15 @@
 ## Vagrant Environment
 |Role|FQDN|OS|CPU|RAM|IP|
 |----|----|----|----|----|----|
+|Gluster|gluster1.example.com|CentOS 7|1CPU|2GB RAM|172.16.16.11|
+|Gluster|gluster2.example.com|CentOS 7|1CPU|2GB RAM|172.16.16.12|
+|Client|client1.example.com|CentOS 7|1CPU|2GB RAM|172.16.16.20|
 |Load Balancer|loadbalancer.example.com|CentOS 7|1CPU|1GB RAM|172.16.16.100| 
 |Master|kmaster1.example.com|CentOS 7|2CPU|2GB RAM|172.16.16.101|
 |Master|kmaster2.example.com|CentOS 7|2CPU|2GB RAM|172.16.16.102|
 |Worker|kworker1.example.com|CentOS 7|1CPU|1GB RAM|172.16.16.201|
+
+## Set up GlusterFS
 
 ## Set up del load balancer
 1)Scaricare haproxy
