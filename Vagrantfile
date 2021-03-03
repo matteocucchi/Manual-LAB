@@ -4,23 +4,23 @@
 
 ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 
-GlusterCount = 2
+Vagrant.configure(2) do |config|
 
-# Gluster Nodes
-(1..GlusterCount).each do |i|
-  config.vm.define "gluster#{i}" do |gluster|
-    gluster.vm.box = "centos/7"
-    gluster.vm.hostname = "gluster#{i}.example.com"
-    gluster.vm.network "private_network", ip: "172.16.16.1#{i}"
-    gluster.vm.provider "virtualbox" do |v|
-      v.name = "gluster#{i}"
-      v.memory = 2048
-      v.cpus = 1
+  GlusterCount = 2
+
+  # Gluster Nodes
+  (1..GlusterCount).each do |i|
+    config.vm.define "gluster#{i}" do |gluster|
+      gluster.vm.box = "centos/7"
+      gluster.vm.hostname = "gluster#{i}.example.com"
+      gluster.vm.network "private_network", ip: "172.16.16.1#{i}"
+      gluster.vm.provider "virtualbox" do |v|
+        v.name = "gluster#{i}"
+        v.memory = 2048
+        v.cpus = 1
+      end
     end
   end
-end
-
-Vagrant.configure(2) do |config|
 
   # Client Node
   config.vm.define "client" do |client|
@@ -33,8 +33,6 @@ Vagrant.configure(2) do |config|
       v.cpus = 1
     end
   end
-
-Vagrant.configure(2) do |config|
 
   # Load Balancer Node
   config.vm.define "loadbalancer" do |loadbalancer|
