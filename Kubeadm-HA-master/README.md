@@ -1,4 +1,4 @@
-# Set up di un cluster Kubernetes con HA + Glusterfs + Heketi
+# Set up di un cluster Kubernetes con HA usando kubeadm
 ## Vagrant Environment
 |Role|FQDN|OS|CPU|RAM|IP|
 |----|----|----|----|----|----|
