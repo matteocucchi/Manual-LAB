@@ -11,8 +11,13 @@
 |Worker|kworker1.example.com|CentOS 7|1CPU|1GB RAM|172.16.16.201|
 
 ## Set up GlusterFS
+1)Installare e abilitare glusterd:
 
-## Set up del load balancer
+    sudo yum install -y centos-release-gluster
+    sudo yum install -y glusterfs-server
+    systemctl enable --now glusterd
+    
+## Set up del load balancer + Heketi
 1)Scaricare haproxy
     
     sudo yum install -y haproxy
