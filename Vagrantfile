@@ -6,7 +6,7 @@ ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 
 Vagrant.configure(2) do |config|
 
-  GlusterCount = 2
+  GlusterCount = 3
 
   # Gluster Nodes
   (1..GlusterCount).each do |i|
