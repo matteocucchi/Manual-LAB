@@ -2,49 +2,33 @@
 ## Vagrant Environment
 |Role|FQDN|OS|CPU|RAM|IP|
 |----|----|----|----|----|----|
-|Gluster|gluster1.example.com|CentOS 7|1CPU|2GB RAM|172.16.16.11|
-|Gluster|gluster2.example.com|CentOS 7|1CPU|2GB RAM|172.16.16.12|
 |Client|client1.example.com|CentOS 7|1CPU|2GB RAM|172.16.16.20|
 |Load Balancer|loadbalancer.example.com|CentOS 7|1CPU|1GB RAM|172.16.16.100| 
 |Master|kmaster1.example.com|CentOS 7|2CPU|2GB RAM|172.16.16.101|
 |Master|kmaster2.example.com|CentOS 7|2CPU|2GB RAM|172.16.16.102|
+|Gluster|gluster1.example.com|CentOS 7|1CPU|2GB RAM|172.16.16.11|
+|Gluster|gluster2.example.com|CentOS 7|1CPU|2GB RAM|172.16.16.12|
+|Gluster|gluster3.example.com|CentOS 7|1CPU|2GB RAM|172.16.16.13|
 |Worker|kworker1.example.com|CentOS 7|1CPU|1GB RAM|172.16.16.201|
-
-## Set up GlusterFS
-1)Installare e abilitare glusterd:
-
-    sudo yum install -y centos-release-gluster
-    sudo yum install -y glusterfs-server
-    systemctl enable --now glusterd
+|Worker|kworker1.example.com|CentOS 7|1CPU|1GB RAM|172.16.16.201|
     
-## Set up del load balancer + Heketi
-1)Scaricare haproxy
+## Set up del load balancer
+1)Scaricare haproxy:
     
     sudo yum install -y haproxy
 
 2)Modificare il file /etc/haproxy/haproxy.cfg:
 
-    frontend kubernetes-frontend
-        bind 172.16.16.100:6443
-        mode tcp
-        option tcplog
-        default_backend kubernetes-backend
-
-    backend kubernetes-backend
-        mode tcp
-        option tcp-check
-        balance roundrobin
-        server kmaster1 172.16.16.101:6443 check fall 3 rise 2
-        server kmaster2 172.16.16.102:6443 check fall 3 rise 2
+    Vedere file haproxy.cfg nella repository
 
 3)Disabilitare il controllo di SELinux:
     
-    sudo setsebool -P haproxy_connect_any=1
+    sudo setenforce 0
+    vim /etc/sysconf/selinux: disabilitare selinux.
 
 4)Disabilitari firewalld:
 
     sudo systemctl disable --now firewalld
-
 
 ## Set up cluster (tutti i nodi)
 eseguire tutti i comandi come root!!
@@ -54,7 +38,7 @@ eseguire tutti i comandi come root!!
 2)Disabilitare SELinux:
     
     sudo setenforce 0
-    modificare il file /etc/sysconfig/selinux
+    vim /etc/sysconfig/selinux
 
 3)Disabilitare il Firewall:
     
@@ -105,6 +89,8 @@ eseguire tutti i comandi come root!!
 
     sudo kubeadm init --control-plane-endpoint="172.16.16.100:6443" --upload-certs --apiserver-advertise-address=172.16.16.101 --pod-network-cidr=10.244.0.0/16
 
+>   ATTENZIONE: cambiare la subnet impostata nel parametro --pod-network-cidr=<subnet> a seconda del network plugin utilizzato, in questo caso flannel.
+
 2)per poter utilizzare i comandi dell'interfaccia del cluster gli utenti hanno bisogno delle impostazioni di kubernetes all'interno della propria cartella /home:
 
     mkdir /home/user/.kube
@@ -118,14 +104,40 @@ eseguire tutti i comandi come root!!
 
 >    ATTENZIONE: se si utilizza vagrant modificare il file kube-flannel.yml, cercare con vim /flanneld, sotto "args:" aggiungere indentato correttamente "- --iface=eth1". Questo si fa perchè vagrant utilizza la iface eth0 per il collegamento ssh con le macchine che di default viene utilizata da flanneld.
 
-4)se si è dimenticato il token per l'aggiunta di nuovi nodi al cluster:
+4)Avviare il network plugin:
+
+    kubectl create -f kube-flannel.yml
+
+5)se si è dimenticato il token per l'aggiunta di nuovi nodi al cluster:
 
     sudo kubeadm token create --print-join-command
 
-
 ## SUGLI ALTRI NODI:
-1)Aggiungere un nodo:
+1)Aggiungere un Worker Node:
 
-    eseguire il comando restituito come output nel passaggio 4 come root.
->ATTENZIONE: distinguere il tipo di nodo da aggiungere per utilizzare la join corretta.
+    utilizzare il comando risultante nel passo 5) precedente
 
+2)Aggiungere un aster Node:
+
+    sudo kubeadm init phase upload-certs --upload-certs (sul master già esistente)
+    sudo kubeadm token create --certificate-key <key generata nel comando precedente> --print-join-command (sul master già esistente)
+    utilizzare il comando di output del comando precedente sul nuovo Master con l'aggiunta del parametro --apiserver-advertise-address <ip-nuovo-master>
+
+## Set up GlusterNodes
+1)Installare e abilitare glusterd:
+
+    sudo yum install -y centos-release-gluster
+    sudo yum install -y glusterfs-server
+    systemctl enable --now glusterd
+
+2)Modificare il file /etc/hosts.
+
+3)Aggiungere i nodi al cluster:
+
+    sudo gluster peer probe gluster2
+    sudo gluster peer status
+
+4)Oltre ad installare il server è necessario eseguire altri due passaggi:
+
+    sudo yum install -y glusterfs-client 
+    sudo modprobe dm_thin_pool
