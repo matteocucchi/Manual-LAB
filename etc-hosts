@@ -1,0 +1,5 @@
+172.16.16.100 loadbalancer.example.com loadbalancer
+172.16.16.101 kmaster1.example.com kmaster1
+172.16.16.102 kmaster2.example.com kmaster2
+172.16.16.201 kworker1.example.com kworker1
+172.16.16.202 kworker2.example.com kworker2
