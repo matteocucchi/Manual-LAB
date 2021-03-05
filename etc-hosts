@@ -3,3 +3,6 @@
 172.16.16.102 kmaster2.example.com kmaster2
 172.16.16.201 kworker1.example.com kworker1
 172.16.16.202 kworker2.example.com kworker2
+172.16.16.11 gluster1.example.com gluster1
+172.16.16.12 gluster2.example.com gluster2
+172.16.16.13 gluster3.example.com gluster3
