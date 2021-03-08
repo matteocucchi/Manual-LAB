@@ -6,7 +6,7 @@
             "node": {
               "hostnames": {
                 "manage": [
-                  "gluster1"
+                  "gluster1.example.com"
                 ],
                 "storage": [
                   "172.16.16.11"
@@ -22,7 +22,7 @@
             "node": {
               "hostnames": {
                 "manage": [
-                  "gluster2"
+                  "gluster2.example.com"
                 ],
                 "storage": [
                   "172.16.16.12"
@@ -38,7 +38,7 @@
             "node": {
               "hostnames": {
                 "manage": [
-                  "gluster3"
+                  "gluster3.example.com"
                 ],
                 "storage": [
                   "172.16.16.13"
