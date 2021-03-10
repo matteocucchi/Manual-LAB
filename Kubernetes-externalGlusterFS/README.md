@@ -17,7 +17,7 @@
 
     sudo yum install -y centos-release-gluster
     sudo yum install -y glusterfs-server
-    systemctl enable --now glusterd
+    sudo systemctl enable --now glusterd
 
 2)Modificare il file /etc/hosts.
 
@@ -31,6 +31,29 @@
     sudo yum install -y glusterfs-client 
     sudo modprobe dm_thin_pool
 
+5)Aggiungere un secondo disco su ogni nodo del cluster Gluster.
+
+6)Creare una partizione nuova sul disco aggiuntivo su ogni nodo
+
+7)Eseguire i seguenti comandi su tutti i nodi Gluster:
+
+    mkfs.xfs -i size=512 /dev/sdb1
+    mkdir -p /data/brick1
+    echo '/dev/sdb1 /data/brick1 xfs defaults 1 2' >> /etc/fstab
+    mount -a && mount
+
+8)Disabilitare il firewall
+
+    sudo systemctl disable --now firewalld
+
+9)Disabilitare il controllo di SELinux:
+    
+    sudo setenforce 0
+    vim /etc/sysconf/selinux: disabilitare selinux.
+
+
+
+    
 ## Set up del load balancer
 1)Scaricare haproxy:
     
@@ -136,7 +159,7 @@ eseguire tutti i comandi come root!!
 
     utilizzare il comando risultante nel passo 5) precedente
 
-2)Aggiungere un aster Node:
+2)Aggiungere un Master Node:
 
     sudo kubeadm init phase upload-certs --upload-certs (sul master già esistente)
     sudo kubeadm token create --certificate-key <key generata nel comando precedente> --print-join-command (sul master già esistente)
