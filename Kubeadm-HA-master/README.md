@@ -74,13 +74,13 @@ eseguire tutti i comandi come root!!
 7)Aggiungere la repository di Kubernetes:
     
     creare il file /etc/yum.repos.d/kubernetes.repo:
-        [kubernetes]
-        name=kubernetes
-        baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-        enabled=1
-        gpgcheck=1
-        repo gpgcheck=1
-        gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    [kubernetes]
+    name=kubernetes
+    baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    enabled=1
+    gpgcheck=1
+    repo gpgcheck=1
+    gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
     
 8)Installare Kubernetes:
 
