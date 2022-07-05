@@ -67,8 +67,9 @@ eseguire tutti i comandi come root!!
 
     sudo yum install -y yum-utils device-mapper-persistent-data lvm2
     sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-    sudo yum install -y docker
+    sudo yum install -y docker containerd.io
     sudo systemctl enable --now docker
+    sudo systemctl enable --now containerd
 
 7)Aggiungere la repository di Kubernetes:
     
