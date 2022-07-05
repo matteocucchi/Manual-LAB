@@ -45,6 +45,7 @@ eseguire tutti i comandi come root!!
     
     sudo setenforce 0
     modificare il file /etc/sysconfig/selinux
+    alternativo /etc/selinux/config
 
 3)Disabilitare il Firewall:
     
