@@ -1,0 +1,116 @@
+1) modificare host file inserendo le nuove macchine
+
+sudo -s
+echo 172.16.16.100 kmaster kmaster.example.com >> /etc/hosts
+echo 172.16.16.101 kworker1 kworker1.example.com >> /etc/hosts
+exit
+
+2) installazione docker
+
+sudo yum install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
+sudo systemctl enable --now docker
+sudo systemctl enable --now containerd
+
+
+2) Installazione alternativa docker-ce
+
+sudo yum check-update
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2 -y
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
+sudo systemctl start docker
+sudo systemctl enable --now docker
+sudo systemctl status docker
+sudo rm /etc/containerd/config.toml
+sudo systemctl restart containerd
+
+2) Installazione Docker Fede
+
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum install -y docker containerd.io
+sudo systemctl enable --now docker
+sudo systemctl enable --now containerd
+
+sudo rm /etc/containerd/config.toml
+sudo systemctl restart containerd
+
+
+
+3) disabilitare SELinux
+
+sudo setenforce 0
+sudo sed -i 's/SELINUX=permissive\|SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+sudo reboot
+
+
+4) Disabilitare firewalld
+
+sudo systemctl disable firewalld
+sudo systemctl stop firewalld
+
+5) Disabilitare lo swap
+
+sudo vi /etc/fstab
+
+sudo sed -i 's+/swapfile+#/swapfile+g' /etc/fstab
+sudo swapoff -a
+
+6) Creazione file di configurazione per networking kubernetes
+
+sudo -s
+touch /etc/sysctl.d/kubernetes.conf
+echo net.bridge.bridge-nf-call-ip6tables=1 >> /etc/sysctl.d/kubernetes.conf
+echo net.bridge.bridge-nf-call-iptables=1 >> /etc/sysctl.d/kubernetes.conf
+sudo sysctl --system
+exit
+
+sudo vi /etc/sysctl.d/kubernetes.conf
+net.bridge.bridge-nf-call-ip6tables=1
+net.bridge.bridge-nf-call-iptables=1
+
+7) Creazione file per repository Kubernetes
+
+sudo -s
+touch /etc/yum.repos.d/kubernetes.repo
+echo [kubernetes] >> /etc/yum.repos.d/kubernetes.repo
+echo name=kubernetes >> /etc/yum.repos.d/kubernetes.repo
+echo baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64 >> /etc/yum.repos.d/kubernetes.repo
+echo enabled=1 >> /etc/yum.repos.d/kubernetes.repo
+echo gpgcheck=1 >> /etc/yum.repos.d/kubernetes.repo
+echo repo gpgcheck=1 >> /etc/yum.repos.d/kubernetes.repo
+echo gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg >> /etc/yum.repos.d/kubernetes.repo
+exit
+
+8) Installare kubernetes
+
+sudo yum install -y kubectl kubeadm kubelet
+
+9) Attivare il servizio kubelet
+
+sudo systemctl enable --now kubelet
+
+10) Inizializzare il cluster sul nodo Master
+
+sudo kubeadm init --apiserver-advertise-address=172.16.16.100 --pod-network-cidr=10.244.0.0/16
+
+sudo kubeadm init --apiserver-advertise-address=192.168.56.101 --pod-network-cidr=10.244.0.0/16
+
+
+10) Inizializione Nodo Master alternativo
+
+sudo kubeadm init --control-plane-endpoint="192.168.56.100:6443" --upload-certs --apiserver-advertise-address=192.168.56.101 --pod-network-cidr=10.244.0.0/16
+
+11) Impostazioni kubernetes all'interno della propria cartella home:
+
+mkdir -p $HOME/.kube
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+chown $(id -u):$(id -g) $HOME/.kube/config
+
+11) Impostazioni kubernetes all'interno della propria cartella home Alternativo
+
+mkdir /home/vagrant/.kube
+sudo cp /etc/kubernetes/admin.conf /home/vagrant/.kube/conf
+sudo chown -R vagrant:vagrant /home/vagrant/.kube/conf
+
+
