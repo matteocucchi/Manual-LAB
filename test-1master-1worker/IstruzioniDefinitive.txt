@@ -64,3 +64,11 @@ sudo kubeadm init --apiserver-advertise-address=172.16.16.100 --pod-network-cidr
 mkdir -p $HOME/.kube
 cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 chown $(id -u):$(id -g) $HOME/.kube/config
+
+12) flannel
+wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+vi kube-flannel.yml
+/flannel
+/args
+aggiungere - --iface=eth1
+eseguire kubectl apply
