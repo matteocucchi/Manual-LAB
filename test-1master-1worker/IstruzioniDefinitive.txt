@@ -25,7 +25,7 @@ sudo swapoff -a
 touch /etc/sysctl.d/kubernetes.conf
 echo net.bridge.bridge-nf-call-ip6tables=1 >> /etc/sysctl.d/kubernetes.conf
 echo net.bridge.bridge-nf-call-iptables=1 >> /etc/sysctl.d/kubernetes.conf
-sudo sysctl --system
+sysctl --system
 
 6) aggiunta repo ed installazione docker
 
@@ -52,7 +52,7 @@ sudo systemctl enable --now kubelet
 
 9) eliminare file di configurazione di containerd
 
-rm /etc/containerd/config.toml -y
+rm /etc/containerd/config.toml
 systemctl restart containerd
 
 10) eseguire sul master kubeadm init
