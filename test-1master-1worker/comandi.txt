@@ -7,10 +7,23 @@ docker exec -it --user root <container id> bash
         curl https://get.docker.com/ > dockerinstall && chmod 777 dockerinstall && ./dockerinstall
 
         apt-get install bc
+		
+	  chmod 666 /var/run/docker.sock
 
         exit
 
-sudo chmod 666 /var/run/docker.sock
+	  
 
 sudo docker container logs <container id>
 
+
+
+
+-------------------COMANDI JENKINS KUBE----------------------------
+
+*DA ESEGUIRE SUL MASTER*
+kubectl get pod <JENKINS_POD_NAME> -n <JENKINS_NAMESPACE> -o jsonpath="{.status.containerStatuses[].containerID}" | sed 's/.*\/\///'
+
+
+*DA ESEGUIRE SUL NODO CHE ESEGUE IL CONTAINER*
+sudo runc --root /run/containerd/runc/k8s.io/ exec -t -u 0 <CONTAINER_ID> sh
