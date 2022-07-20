@@ -6,9 +6,9 @@ docker exec -it --user root <container id> bash
 
         curl https://get.docker.com/ > dockerinstall && chmod 777 dockerinstall && ./dockerinstall
 
-        apt-get install bc
+        apt-get install -y bc
 		
-	  chmod 666 /var/run/docker.sock
+	chmod 666 /var/run/docker.sock
 
         exit
 

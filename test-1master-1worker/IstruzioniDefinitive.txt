@@ -1,74 +1,68 @@
-1) modificare file hosts (/etc/hosts)
+Lista istruzioni per creazione cluster k8s con CI/CD
 
-echo 172.16.16.100 kmaster kmaster.example.com >> /etc/hosts
-echo 172.16.16.101 kworker1 kworker1.example.com >> /etc/hosts
+1.  Setting macchine virtuali
+    Repo in gioco: 
+	    https://github.com/matteocucchi/Manual-LAB.git \test-1master-1worker
+	    https://github.com/matteocucchi/config-files.git
 
-2) disabilitare selinux
+            1)  vagrant up                                                                                                                          --> crea macchine virtuali e le configura
+            
+            2)  vagrant ssh kmaster                                                                                                                 --> mi connetto alla vm
+                2.1)  vagrant@kmaster$ sudo yum install wget -y                                                                                     --> installo wget
+                2.2)  vagrant@kmaster$ wget https://raw.githubusercontent.com/matteocucchi/config-files/main/master.sh                              --> recupero master.sh
+                2.3)  vagrant@kmaster$ chmod +x master.sh                                                                                           --> permessi esecuzione master.sh
+                2.4)  vagrant@kmaster$ ./master.sh | grep task                                                                                      --> eseguo script (grep per stampa ordinata delle varie fasi)
+            
+            3) vagrant ssh kworker1                                                                                                                 --> mi connetto alla vm
+                3.1)  vagrant@kworker1$ sudo yum install wget -y                                                                                    --> installo wget
+                3.2)  vagrant@kworker1$ wget https://raw.githubusercontent.com/matteocucchi/config-files/main/worker.sh                             --> recupero worker.sh
+                3.3)  vagrant@kworker1$ chmod +x worker.sh                                                                                          --> permessi esecuzione worker.sh
+                3.4)  vagrant@kworker1$ ./worker.sh | grep task                                                                                     --> eseguo script (grep per stampa ordinata delle varie fasi)
+            
+            4) vagrant ssh kworker2                                                                                                                 --> mi connetto alla vm
+                4.1)  vagrant@kworker2$ sudo yum install wget -y                                                                                    --> installo wget
+                4.2)  vagrant@kworker2$ wget https://raw.githubusercontent.com/matteocucchi/config-files/main/worker.sh                             --> recupero worker.sh
+                4.3)  vagrant@kworker2$ chmod +x worker.sh                                                                                          --> permessi esecuzione worker.sh
+                4.4)  vagrant@kworker2$ ./worker.sh | grep task                                                                                     --> eseguo script (grep per stampa ordinata delle varie fasi)
+            
+            5) << sotto nodo master >>
+                2.5) vagrant@kmaster$ kubeadm token create --print-join-command                                                                     --> stampa comando di join
 
-setenforce 0
-sed -i 's/SELINUX=permissive\|SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
-reboot
+            6) << sotto nodo worker1 >>
+                3.5) vagrant@kworker1$ kubeadm join <INDIRIZZO_MASTER> --token <TOKEN> --discovery-token-ca-cert-hash sha256:<HEX_CODE>             --> comando che aggiunge il nodo alla rete
+            
+            7) << sotto nodo worker2 >>
+                4.5) vagrant@kworker1$ kubeadm join <INDIRIZZO_MASTER> --token <TOKEN> --discovery-token-ca-cert-hash sha256:<HEX_CODE>             --> comando che aggiunge il nodo alla rete
+
+            8) << sotto nodo master >>
+                2.6) vagrant@master$ kubectl apply -f https://raw.githubusercontent.com/matteocucchi/config-files/main/kube-flannel.yml             --> installa flannel (necessario per networking)
+
+2) Installazione ArgoCD
+    Repo in gioco:
+        https://github.com/matteocucchi/test-application.git
+            1) << sotto nodo master >>
+                1.1) vagrant@kmaster$ kubectl create namespace argocd                                                                                       --> crea namespace ArgoCD
+                1.2) vagrant@kmaster$ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml           --> installa componenti ArgoCD
+                1.3) vagrant@kmaster$ kubectl apply -n argocd -f https://raw.githubusercontent.com/matteocucchi/test-application/main/application.yaml      --> installa application ArgoCD
+
+3) Installazione Jenkins
+    Repo in gioco:
+        https://github.com/matteocucchi/test-application-code.git
+        https://github.com/matteocucchi/jenkins-on-kube.git
+            1) << sotto nodo master >>
+                1.1) vagrant@kmaster$ sudo yum install -y git                                                                                               --> installo git
+                1.2) vagrant@kmaster$ git clone https://github.com/matteocucchi/jenkins-on-kube.git                                                         --> clono repo
+                1.3) vagrant@kmaster$ cd jenkins-on-kube                                                                                                    --> entro nella cartella
+                1.4) vagrant@kmaster$ chmod +x exec.sh                                                                                                      --> permessi esecuzione a file
+                1.5) vagrant@kmaster$ ./exec.sh                                                                                                             --> crea componenti per jenkins
+                1.6) vagrant@kmaster$ kubectl get pod <JENKINS_POD_NAME> -n <JENKINS_NAMESPACE> -o jsonpath="{.status.containerStatuses[].containerID}" | sed 's/.*\/\///'
+
+            2) << sotto il nodo in cui la pod di jenkins viene eseguita >>
+                2.1) vagrant@kworker1$ sudo runc --root /run/containerd/runc/k8s.io/ exec -t -u 0 <CONTAINER_ID> sh                                                             --> accedo come root alla linea di comando del container in cui jenkins è installato
+                    2.1.1) curl https://get.docker.com/ > dockerinstall && chmod 777 dockerinstall && ./dockerinstall                                                           --> installo docker
+                    2.1.2) apt-get install bc -y                                                                                                                                --> installo bc (modulo per operazioni con float)
+                    2.1.3) chmod 666 /var/run/docker.sock                                                                                                                       --> permessi docker.sock (anche account jenkins può eseguirlo)
 
 
-3) disabilitare firewalld
 
-sudo systemctl disable firewalld
-sudo systemctl stop firewalld
 
-4) disabilitare swap
-
-sudo sed -i 's+/swapfile+#/swapfile+g' /etc/fstab
-sudo swapoff -a
-
-5) creazione file per networking di kubernetes
-
-touch /etc/sysctl.d/kubernetes.conf
-echo net.bridge.bridge-nf-call-ip6tables=1 >> /etc/sysctl.d/kubernetes.conf
-echo net.bridge.bridge-nf-call-iptables=1 >> /etc/sysctl.d/kubernetes.conf
-sysctl --system
-
-6) aggiunta repo ed installazione docker
-
-sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo yum install docker-ce
-sudo systemctl start docker
-sudo systemctl enable docker
-
-7) aggiunta repo kubernetes
-
-touch /etc/yum.repos.d/kubernetes.repo
-echo [kubernetes] >> /etc/yum.repos.d/kubernetes.repo
-echo name=kubernetes >> /etc/yum.repos.d/kubernetes.repo
-echo baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64 >> /etc/yum.repos.d/kubernetes.repo
-echo enabled=1 >> /etc/yum.repos.d/kubernetes.repo
-echo gpgcheck=1 >> /etc/yum.repos.d/kubernetes.repo
-echo repo gpgcheck=1 >> /etc/yum.repos.d/kubernetes.repo
-echo gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg >> /etc/yum.repos.d/kubernetes.repo
-
-8) installazione kubernetes ed attivazione servizio kubelet
-
-sudo yum install -y kubectl kubeadm kubelet
-sudo systemctl enable --now kubelet
-
-9) eliminare file di configurazione di containerd
-
-rm /etc/containerd/config.toml
-systemctl restart containerd
-
-10) eseguire sul master kubeadm init
-
-sudo kubeadm init --apiserver-advertise-address=172.16.16.100 --pod-network-cidr=10.244.0.0/16
-
-11) eseguire comandi per abilitare utente ad usare kubectl
-
-mkdir -p $HOME/.kube
-cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-chown $(id -u):$(id -g) $HOME/.kube/config
-
-12) flannel
-wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-vi kube-flannel.yml
-/flannel
-/args
-aggiungere - --iface=eth1
-eseguire kubectl apply
