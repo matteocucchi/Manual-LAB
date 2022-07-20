@@ -64,5 +64,39 @@ Lista istruzioni per creazione cluster k8s con CI/CD
                     2.1.3) chmod 666 /var/run/docker.sock                                                                                                                       --> permessi docker.sock (anche account jenkins può eseguirlo)
 
 
+4) Setting Jenkins
+    Jenkins raggiungibile a 172.16.16.100:32000
+                            172.16.16.101:32000
+                            172.16.16.102:32000
+    Questo perchè il servizio creato specifica NodePort come type
 
+    1) Al primo accesso Jenkins richiede la password iniziale, è possibile recuperarla nel primo log della pod in cui Jenkins è installato.
+
+            In alternativa è possibile trovarla nel file /var/lib/jenkins/secrets/initialAdminPassword contenuto nella pod
+            Per leggere il contenuto del file eseguire sul nodo master:
+                kubectl exec <JENKINS_POD_NAME> -n <JENKINS_NAMESPACE> -it -- sh
+                    cat /var/lib/jenkins/secrets/initialAdminPassword
+
+    2) Installare i componenti aggiuntivi consigliati
+    3) Creare account
+    4) Setup Job
+    
+                            
+
+
+5) Accedere ArgoCD
+    Per accedere all'interfaccia grafica di ArgoCD è necessario rendere raggiungibile il servizio argocd-server
+    Se si sta utilizzando Lens è sufficiente clickare sulla porta 443:8080/TCP che viene visualizzata aprendo il servizio argocd-server, in automatico Lens farà un port forwarding permettendoci di visualizzare la pagina su una porta libera del localhost.
+
+    In alternativa è possibile patchare il servizio argocd-server e renderlo di tipo NodePort in modo da renderlo raggiungibile dall'esterno del cluster
+        kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort"}}'
+    
+    L'accesso si effettua usando
+    username: admin
+    password: la si trova all'interno del secret argocd-initial-admin-secret locato nel namespace argocd, la password è codificata in base64 
+
+6) Setting Lens
+    Per aggiungere un cluster kubernetes su lens è sufficiente premere 'aggiungi un cluster' con l'opzione 'paste as a text'
+    nella text area che ci viene mostrata incolliamo il risultato di questo comando eseguito sul nodo master:
+        cat ~/.kube/config 
 
