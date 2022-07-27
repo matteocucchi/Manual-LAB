@@ -8,13 +8,13 @@ Vagrant.configure(2) do |config|
 
   # Kubernetes Master Server
   config.vm.define "osmaster" do |osmaster|
-    kmaster.vm.box = "centos/7"
-    kmaster.vm.hostname = "osmaster.example.com"
-    kmaster.vm.network "private_network", ip: "172.16.16.100"
-    kmaster.vm.provider "virtualbox" do |v|
+    osmaster.vm.box = "centos/7"
+    osmaster.vm.hostname = "osmaster.example.com"
+    osmaster.vm.network "private_network", ip: "172.16.16.100"
+    osmaster.vm.provider "virtualbox" do |v|
       v.name = "osmaster"
-      v.memory = 2048
-      v.cpus = 2
+      v.memory = 10240
+      v.cpus = 4
     end
   end
 end
