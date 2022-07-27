@@ -7,7 +7,7 @@ ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 Vagrant.configure(2) do |config|
 
   # Kubernetes Master Server
-  config.vm.define "osmaster" do |kmaster|
+  config.vm.define "osmaster" do |osmaster|
     kmaster.vm.box = "centos/7"
     kmaster.vm.hostname = "osmaster.example.com"
     kmaster.vm.network "private_network", ip: "172.16.16.100"
