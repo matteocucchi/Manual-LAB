@@ -55,7 +55,6 @@ Lista istruzioni per creazione cluster k8s con CI/CD
                 1.3) vagrant@kmaster$ cd jenkins-on-kube                                                                                                    --> entro nella cartella
                 1.4) vagrant@kmaster$ chmod +x exec.sh                                                                                                      --> permessi esecuzione a file
                 1.5) vagrant@kmaster$ ./exec.sh                                                                                                             --> crea componenti per jenkins
-                                                                                                                                     --> permessi docker.sock (anche account jenkins può eseguirlo)
 
 
 4) Setting Jenkins
