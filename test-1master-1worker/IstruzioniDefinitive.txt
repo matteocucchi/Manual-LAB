@@ -55,13 +55,7 @@ Lista istruzioni per creazione cluster k8s con CI/CD
                 1.3) vagrant@kmaster$ cd jenkins-on-kube                                                                                                    --> entro nella cartella
                 1.4) vagrant@kmaster$ chmod +x exec.sh                                                                                                      --> permessi esecuzione a file
                 1.5) vagrant@kmaster$ ./exec.sh                                                                                                             --> crea componenti per jenkins
-                1.6) vagrant@kmaster$ kubectl get pod <JENKINS_POD_NAME> -n <JENKINS_NAMESPACE> -o jsonpath="{.status.containerStatuses[].containerID}" | sed 's/.*\/\///'
-
-            2) << sotto il nodo in cui la pod di jenkins viene eseguita >>
-                2.1) vagrant@kworker1$ sudo runc --root /run/containerd/runc/k8s.io/ exec -t -u 0 <CONTAINER_ID> sh                                                             --> accedo come root alla linea di comando del container in cui jenkins è installato
-                    2.1.1) curl https://get.docker.com/ > dockerinstall && chmod 777 dockerinstall && ./dockerinstall                                                           --> installo docker
-                    2.1.2) apt-get install bc -y                                                                                                                                --> installo bc (modulo per operazioni con float)
-                    2.1.3) chmod 666 /var/run/docker.sock                                                                                                                       --> permessi docker.sock (anche account jenkins può eseguirlo)
+                                                                                                                                     --> permessi docker.sock (anche account jenkins può eseguirlo)
 
 
 4) Setting Jenkins
